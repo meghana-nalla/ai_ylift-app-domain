@@ -2,6 +2,22 @@
 
 Always reference these instructions first and fallback to search or bash commands only when you encounter unexpected information that does not match the info here.
 
+## Quick Navigation for Common Tasks
+
+### Immediate Development Setup
+1. `flutter doctor -v` -- verify Flutter installation
+2. `flutter pub get` -- install dependencies (2-5 minutes)
+3. `flutter pub run build_runner build` -- generate required files (3-8 minutes)
+4. `flutter run -d chrome` -- start development server (3-5 minutes)
+
+### Code Locations for Common Changes
+- **Add new products**: `lib/models/simple/product_display.dart` and `lib/presentation/components/products/`
+- **Modify authentication**: `lib/core/controllers/auth/` and `lib/core/services/bearer.dart`
+- **Update UI components**: `lib/presentation/components/` (organized by component type)
+- **Add new pages**: `lib/presentation/pages/desktop/` or `lib/presentation/pages/mobile/`
+- **Configure API endpoints**: `lib/models/urls/api.dart`
+- **Update navigation**: `lib/core/routes/index.dart`
+
 ## CRITICAL: Network Access Requirements
 
 This project has specific network dependencies that may fail in restricted environments:
