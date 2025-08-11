@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+  <base href="$FLUTTER_BASE_HREF">
+
+
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+
+  <!-- iOS meta tags & icons -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="ylift_app">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="favicon.png"/>
+  <script src="https://cdn.auth0.com/js/auth0-spa-js/2.0/auth0-spa-js.production.js" defer></script>
+  <link rel="manifest" href="/manifest.json">
+  <title>Y Lift Store</title>
+  <meta name="description" content="The Y LIFT Network Store offers a variety of products at special rates exclusively for our network members.">
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-57B09MTPB8"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-57B09MTPB8');
+  </script>
+<style>
+  body{
+    margin: 0;
+    padding: 0;
+    font-family: 'Roboto', sans-serif;
+    background-color: black;
+    transition: background-color 0.5s;
+  }
+
+  @keyframes breathing {
+    0% { opacity: 0.35; }
+    50% { opacity: 0.85; }
+    100% { opacity: 0.35; }
+  }
+
+  .yls-background-container {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -100000;
+    background-color: #181817;
+    display: flex;
+    justify-content: center;
+    animation: breathing 4s ease-in-out infinite;
+  }
+
+  .yls-background-container img {
+    width: 100vw;
+    margin: auto;
+    display: block;
+  }
+
+  .flutter-loader {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #000 !important;
+  }
+  .indeterminate::before {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    border-color: black !important;
+    color: #000;
+    background-color: #fe725d !important;
+  }
+  .indeterminate::after {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    border-color: black !important;
+    color: #000;
+    background-color: #fe725d !important;
+  }
+    .flutter-loading img {
+        width: 100px;
+    }
+</style>
+</head>
+<body>
+<div class="yls-background-container">
+  <img src="assets/msc/images/ys_logo.png" alt="Y Lift Store" style="width: 35vw; height: auto;">
+</div>
+ <script src="/flutter_bootstrap.js" async></script>
+</body>
+</html>

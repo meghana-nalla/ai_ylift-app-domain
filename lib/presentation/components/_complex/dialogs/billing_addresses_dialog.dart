@@ -1,0 +1,263 @@
+import 'package:YLift/core/controllers/global.dart';
+import 'package:YLift/presentation/components/z-index_export.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:galaxy_ui/galaxy_ui.dart';
+import 'package:galaxy_models/galaxy_models.dart';
+
+/// Copy of SavedAddressesDialog
+class BillingAddressesDialog extends StatefulWidget {
+  final void Function(AddressSimple address) onSelectedAddress;
+  final bool isFromProfile;
+
+  const BillingAddressesDialog({
+    super.key,
+    required this.onSelectedAddress,
+    this.isFromProfile = false,
+  });
+
+  @override
+  State<BillingAddressesDialog> createState() => _BillingAddressesDialogState();
+}
+
+class _BillingAddressesDialogState extends State<BillingAddressesDialog> {
+  final GlobalController controller = Get.find<GlobalController>();
+  List<AddressSimple>? addresses;
+  bool get isLoading => addresses == null;
+
+  void loadAddresses() async {
+    final userAddresses = await controller.userController
+        .getAddressesDynamic(addressType: AddressSimpleType.BILLING);
+    setState(() {
+      addresses = userAddresses;
+    });
+  }
+
+  AddressSimple? selectedAddress;
+
+  @override
+  void initState() {
+    super.initState();
+    loadAddresses();
+  }
+
+  // final void Function(Address address) onAddressCreated;
+  void selectAddress() {
+    if (!_validateAddress(selectedAddress)) return;
+    // widget.update();
+    widget.onSelectedAddress(selectedAddress!);
+    Navigator.pop(context);
+  }
+
+  bool _validateAddress(AddressSimple? address) {
+    String msg = 'Error with address: ';
+
+    if (address == null) {
+      msg += 'address cannot be null';
+      print(msg);
+      return false;
+    }
+    if (address.line1 == null) {
+      msg += 'address line 1 cannot be null';
+      print(msg);
+      return false;
+    }
+    if (address.line1!.length < 3) {
+      msg += 'address line 1 must be at least 3 characters';
+      print(msg);
+      return false;
+    }
+    if (address.line1 == 'NULL') {
+      msg += 'address is invalid';
+      print(msg);
+      return false;
+    }
+    return true;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    Widget content;
+    if (isLoading) {
+      content = const CircularProgressIndicator();
+    } else if (addresses!.isEmpty) {
+      content = const Text('No saved addresses');
+    } else {
+      content = SizedBox(
+        height: 256,
+        child: Material(
+          color: Colors.white,
+          child: ListView.builder(
+            itemCount: addresses!.length,
+            itemBuilder: (context, index) {
+              final address = addresses![index];
+              final isSelected =
+                  address.addressId == selectedAddress?.addressId;
+              return ListTile(
+                tileColor: isSelected ? YLiftColor.beige : null,
+                onTap:
+                    address.isValid
+                        ? () {
+                          if (_validateAddress(address)) {
+                            setState(() {
+                              selectedAddress = address;
+                              widget.onSelectedAddress(selectedAddress!);
+                            });
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  'Error: selected address is invalid. Please select a different address',
+                                ),
+                              ),
+                            );
+                          }
+                        }
+                        : null,
+                title: Text(
+                  address.display,
+                  style:
+                      _validateAddress(address)
+                          ? TextStyle(
+                            color:
+                                address.isValid ? Colors.black : Colors.black26,
+                          )
+                          : TextStyle(
+                            color:
+                                address.isValid
+                                    ? Colors.black38
+                                    : Colors.black26,
+                          ),
+                ),
+                subtitle: Text(
+                  address.isValid
+                      ? address.name
+                      : 'Invalid address, please edit',
+                  style: const TextStyle(
+                    color: Colors.black38,
+                    fontSize: 13.33,
+                  ),
+                ),
+
+                trailing:
+                    !address.isValid
+                        ? IconButton(
+                          onPressed: () {
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return EditAddressDialog(
+                                  address: address,
+                                  onEdit: (editedAddress) async {
+                                    await controller.addressBook.updateAddress(
+                                      editedAddress,
+                                      address,
+                                    );
+                                    loadAddresses();
+                                  },
+                                );
+                              },
+                            );
+                          },
+                          icon: const Icon(Icons.edit),
+                        )
+                        : isSelected
+                        ? Icon(Icons.check_circle, color: Colors.green)
+                        : null,
+              );
+            },
+          ),
+        ),
+      );
+    }
+    return Dialog(
+      child: SizedBox(
+        width: 640,
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Text('Billing addresses', style: TextStyle(fontSize: 24)),
+                  if (addresses != null && addresses!.isNotEmpty)
+                    Text(' (${addresses!.length})'),
+                  const Spacer(),
+                  CloseIconButton(),
+                ],
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Selected address',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              if (selectedAddress == null)
+                const Text('No address selected')
+              else
+                ListTile(
+                  title: Text(selectedAddress!.display),
+                  subtitle: Text(
+                    selectedAddress!.name,
+                    style: const TextStyle(
+                      color: Colors.black38,
+                      fontSize: 13.33,
+                    ),
+                  ),
+                ),
+              const Divider(height: 32),
+              Text(
+                'Scroll for more addresses',
+                style: TextStyle(fontSize: 11.11),
+              ),
+              content,
+              const SizedBox(height: 32),
+              OverflowBar(
+                alignment: MainAxisAlignment.end,
+                spacing: 16,
+                overflowSpacing: 8,
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: const Text('Close'),
+                  ),
+                  // OutlinedButton(
+                  //   onPressed: () {
+                  //     showDialog(
+                  //       context: context,
+                  //       builder:
+                  //           (context) => AddAddressDialog(
+                  //             onAdd: (address) async {
+                  //               await controller.addressBook.addAddress(
+                  //                 address,
+                  //               );
+                  //               setState(() {
+                  //                 selectedAddress = address;
+                  //               });
+                  //               loadAddresses();
+                  //             },
+                  //           ),
+                  //     );
+                  //   },
+                  //   child: const Text('Add new address'),
+                  // ),
+                  RoundedFilledButton(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 20,
+                      horizontal: 24,
+                    ),
+                    onPressed: selectAddress,
+                    child: const Text('Select address'),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

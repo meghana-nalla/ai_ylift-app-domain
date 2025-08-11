@@ -1,0 +1,35 @@
+{
+    "name": "Y Lift Store",
+    "short_name": "YLS",
+    "start_url": ".",
+    "display": "standalone",
+    "background_color": "#b9aca1",
+    "theme_color": "#b9aca1",
+    "description": "The Y LIFT Network Store offers a variety of products at special rates exclusively for our network members.",
+    "orientation": "portrait-primary",
+    "prefer_related_applications": false,
+    "icons": [
+        {
+            "src": "https://ylift.app/icons/Icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "https://ylift.app/icons/Icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        },
+        {
+            "src": "https://ylift.app/icons/Icon-maskable-192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "maskable"
+        },
+        {
+            "src": "https://ylift.app/icons/Icon-maskable-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
+        }
+    ]
+}

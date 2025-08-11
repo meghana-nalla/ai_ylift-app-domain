@@ -1,0 +1,41 @@
+name: Backup Production Branch
+on:
+  push:
+    branches:
+      - production
+  pull_request:
+    branches:
+      - production
+    types: [closed]
+jobs:
+  backup:
+    # Add an extra condition to verify we're dealing with the production branch
+    if: (github.event_name == 'push' && github.ref == 'refs/heads/production') || (github.event_name == 'pull_request' && github.event.pull_request.merged && github.event.pull_request.base.ref == 'production')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Debug GitHub context
+        run: |
+          echo "Branch ref: ${{ github.ref }}"
+          echo "Event name: ${{ github.event_name }}"
+          echo "Repository: ${{ github.repository }}"
+          echo "Base ref (PR only): ${{ github.event.pull_request.base.ref }}"
+          echo "Head ref (PR only): ${{ github.event.pull_request.head.ref }}"
+          
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Ensures full git history
+          
+      - name: Create timestamp
+        id: timestamp
+        run: echo "timestamp=$(date +'%Y-%m-%d-%H-%M-%S')" >> $GITHUB_OUTPUT
+        
+      - name: Create backup branch
+        run: |
+          git fetch --all
+          git checkout production
+          git checkout -b "backup-prod/${{ steps.timestamp.outputs.timestamp }}"
+          git push origin "backup-prod/${{ steps.timestamp.outputs.timestamp }}"
+          
+      - name: Print confirmation
+        run: 'echo "Backup branch created: backup-prod/${{ steps.timestamp.outputs.timestamp }}"'
